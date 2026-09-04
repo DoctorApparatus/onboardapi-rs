@@ -1,6 +1,6 @@
 [package]
 name = "rmodel-types"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Rust types generated from Rheinmetall onboardapi IDL sources by tidl2rust."
 
