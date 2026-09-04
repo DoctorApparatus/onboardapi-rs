@@ -991,7 +991,7 @@ pub struct EncryptionType {
 }
 
 pub mod general_status {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Not_Supported")]
@@ -1005,7 +1005,7 @@ pub mod general_status {
 }
 
 pub mod property_access_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Undefined")]
@@ -1021,7 +1021,7 @@ pub mod property_access_kind {
 }
 
 pub mod operation_mode_state_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Undefined")]
@@ -1053,7 +1053,7 @@ pub mod operation_mode_state_kind {
 }
 
 pub mod mode_transition_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Undefined")]
@@ -1069,7 +1069,7 @@ pub mod mode_transition_kind {
 }
 
 pub mod operation_fault_state_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Undefined")]
@@ -1091,7 +1091,7 @@ pub mod operation_fault_state_kind {
 }
 
 pub mod storage_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Undefined")]
@@ -1105,7 +1105,7 @@ pub mod storage_kind {
 }
 
 pub mod optical_sensor_mode {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Infrared")]
@@ -1117,7 +1117,7 @@ pub mod optical_sensor_mode {
 }
 
 pub mod zoom_factor {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Zoom_0_25x")]
@@ -1133,7 +1133,7 @@ pub mod zoom_factor {
 }
 
 pub mod image_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Bin")]
@@ -1153,7 +1153,7 @@ pub mod image_kind {
 }
 
 pub mod colour_scheme {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Black_White")]
@@ -1171,7 +1171,7 @@ pub mod colour_scheme {
 }
 
 pub mod object_relation_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Unknown")]
@@ -1197,7 +1197,7 @@ pub mod object_relation_kind {
 }
 
 pub mod availability {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Unknown")]
@@ -1213,7 +1213,7 @@ pub mod availability {
 }
 
 pub mod horizontal_direction {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "None")]
@@ -1227,7 +1227,7 @@ pub mod horizontal_direction {
 }
 
 pub mod vertical_direction {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "None")]
@@ -1241,7 +1241,7 @@ pub mod vertical_direction {
 }
 
 pub mod selected_value_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Undefined")]

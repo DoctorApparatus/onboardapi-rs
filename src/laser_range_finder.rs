@@ -61,7 +61,7 @@ pub struct LrfStatusType {
 }
 
 pub mod lrf_state {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Unknown")]
@@ -81,7 +81,7 @@ pub mod lrf_state {
 }
 
 pub mod first_or_last {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Undefined")]
@@ -95,7 +95,7 @@ pub mod first_or_last {
 }
 
 pub mod measurement_strength {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "None")]

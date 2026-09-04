@@ -83,7 +83,7 @@ pub struct ViewDescriptionType {
 }
 
 pub mod functional_area_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "SA")]
@@ -107,7 +107,7 @@ pub mod functional_area_kind {
 }
 
 pub mod view_focus_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "IGNORE_FOCUS")]
@@ -121,7 +121,7 @@ pub mod view_focus_kind {
 }
 
 pub mod view_always_on_top_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "IGNORE_ALWAYS_ON_TOP")]

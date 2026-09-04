@@ -125,7 +125,7 @@ pub struct SignalProcessingSettingsType {
 }
 
 pub mod hf_component_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Transmitter")]
@@ -137,7 +137,7 @@ pub mod hf_component_kind {
 }
 
 pub mod gain_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Manual")]
@@ -153,7 +153,7 @@ pub mod gain_kind {
 }
 
 pub mod modulation_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "FM")]
@@ -173,7 +173,7 @@ pub mod modulation_kind {
 }
 
 pub mod thresholding_kind {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, schemars::JsonSchema, strum::Display, strum::EnumString, dust_dds::infrastructure::type_support::DdsType)]
     #[allow(non_camel_case_types)] // preserves original IDL variant spelling; see #[serde(rename)]
     pub enum Type {
         #[serde(rename = "Manual")]
