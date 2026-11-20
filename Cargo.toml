@@ -6,9 +6,10 @@ members = ["crates/onboardapi-codegen", "crates/onboardapi-sys", "crates/onboard
 version = "9.10.0"
 edition = "2024"
 license = "EPL-2.0"
-# Set to YOUR repository before the first release; the release workflow checks it.
-repository = "https://github.com/Rheinmetall/onboardapi"
-rust-version = "1.85"
+# Must match the repository that publishes; the release workflow checks it.
+repository = "https://github.com/DoctorApparatus/onboardapi-rs"
+# typed-builder-macro 0.23 uses let-chains (stable since 1.88) without declaring it.
+rust-version = "1.88"
 keywords = ["onboardapi", "dds", "cyclonedds", "middleware", "ffi"]
 categories = ["api-bindings", "network-programming", "simulation"]
 

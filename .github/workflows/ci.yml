@@ -34,11 +34,19 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo run -q -p onboardapi-codegen -- --datamodel datamodel --workspace .
       - run: cargo fmt --all
+      # Only generated files count here; formatting of hand-written code is the fmt check's job.
       - name: Fail on drift
+        env:
+          GENERATED: >-
+            crates/onboardapi/src/generated
+            crates/onboardapi/tests/all_operations.rs
+            crates/onboardapi-sys/shim/generated
+            crates/onboardapi-sys/src/generated.rs
         run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git status --short
-            git --no-pager diff --stat
+          # shellcheck disable=SC2086
+          if [ -n "$(git status --porcelain -- $GENERATED)" ]; then
+            git status --short -- $GENERATED
+            git --no-pager diff --stat -- $GENERATED
             echo "::error::Generated code is stale. Run 'just codegen' and commit the result."
             exit 1
           fi

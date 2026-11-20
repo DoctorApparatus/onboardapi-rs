@@ -21,11 +21,13 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use anyhow::Context;
 use onboardapi::{
     common::{
-        AttitudeType, EllipsoidalPositionType, EulerAttitudeType, OperationModeStateKind, OperationModeType,
-        OperationStatusType, PropertyAccessKind, PositionType, StorageKind, TimeType,
+        AttitudeType, EllipsoidalPositionType, EulerAttitudeType, OperationModeStateKind,
+        OperationModeType, OperationStatusType, PositionType, PropertyAccessKind, StorageKind,
+        TimeType,
     },
     coordinate_frame::{
-        Client, CoordinateFrameDatumSupportType, CoordinateFrameSettingsType, CoordinateFrameStatusType, Service,
+        Client, CoordinateFrameDatumSupportType, CoordinateFrameSettingsType,
+        CoordinateFrameStatusType, Service,
     },
 };
 use tracing::{info, warn};
@@ -39,20 +41,30 @@ const RATE_HZ: f64 = 10.0;
 async fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();
     tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()),
+        )
         .init();
 
     let raw = std::env::var("ONBOARDAPI_DOMAIN").unwrap_or_else(|_| "1".into());
-    let domain: i32 = raw.trim().parse().with_context(|| format!("ONBOARDAPI_DOMAIN={raw:?} is not a DDS domain number"))?;
+    let domain: i32 = raw
+        .trim()
+        .parse()
+        .with_context(|| format!("ONBOARDAPI_DOMAIN={raw:?} is not a DDS domain number"))?;
     let name = std::env::var("DEMO_SERVICE_NAME").unwrap_or_else(|_| "demo_vehicle".into());
     match std::env::var("CYCLONEDDS_URI") {
         Ok(uri) => info!(uri, "cyclone config"),
-        Err(_) => warn!("CYCLONEDDS_URI not set; use `just inspector-demo` or config/cyclonedds/localhost.xml"),
+        Err(_) => warn!(
+            "CYCLONEDDS_URI not set; use `just inspector-demo` or config/cyclonedds/localhost.xml"
+        ),
     }
 
     let service = tokio::spawn(run_service(domain, name.clone()));
     let client = tokio::spawn(run_client(domain, name.clone()));
-    info!(domain, name, "running; open the inspector on domain {domain} — Ctrl+C to stop");
+    info!(
+        domain,
+        name, "running; open the inspector on domain {domain} — Ctrl+C to stop"
+    );
 
     tokio::select! {
         r = service => r??,
@@ -134,7 +146,12 @@ fn status(mode: OperationModeStateKind) -> CoordinateFrameStatusType {
     CoordinateFrameStatusType::builder()
         .operation_status(
             OperationStatusType::builder()
-                .mode(OperationModeType::builder().name("Operation").enumerated_value(mode).build())
+                .mode(
+                    OperationModeType::builder()
+                        .name("Operation")
+                        .enumerated_value(mode)
+                        .build(),
+                )
                 .build(),
         )
         .build()
@@ -157,7 +174,13 @@ fn vehicle_at(t: f64) -> (PositionType, AttitudeType) {
         .build();
     let heading = (90.0 - (w * t).to_degrees() + 180.0).rem_euclid(360.0);
     let attitude = AttitudeType::builder()
-        .euler(EulerAttitudeType::builder().roll(0.0).pitch(1.5 * (t * 0.8).sin()).yaw(heading).build())
+        .euler(
+            EulerAttitudeType::builder()
+                .roll(0.0)
+                .pitch(1.5 * (t * 0.8).sin())
+                .yaw(heading)
+                .build(),
+        )
         .coordinate_frame("NED")
         .timestamp(now())
         .build();
@@ -165,6 +188,11 @@ fn vehicle_at(t: f64) -> (PositionType, AttitudeType) {
 }
 
 fn now() -> TimeType {
-    let d = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default();
-    TimeType::builder().seconds(d.as_secs() as i64).nanoseconds(d.subsec_nanos() as i32).build()
+    let d = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default();
+    TimeType::builder()
+        .seconds(d.as_secs() as i64)
+        .nanoseconds(d.subsec_nanos() as i32)
+        .build()
 }

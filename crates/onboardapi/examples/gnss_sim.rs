@@ -32,7 +32,10 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let raw = std::env::var("ONBOARDAPI_DOMAIN").unwrap_or_else(|_| "0".into());
-    let domain: i32 = raw.trim().parse().with_context(|| format!("ONBOARDAPI_DOMAIN={raw:?} is not a DDS domain number"))?;
+    let domain: i32 = raw
+        .trim()
+        .parse()
+        .with_context(|| format!("ONBOARDAPI_DOMAIN={raw:?} is not a DDS domain number"))?;
     let name = std::env::var("GNSS_SERVICE_NAME").unwrap_or_else(|_| "gnss_sim".into());
 
     match std::env::args().nth(1).as_deref() {
