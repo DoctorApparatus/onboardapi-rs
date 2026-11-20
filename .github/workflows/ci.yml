@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  # The release workflow runs the full CI before publishing.
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: short
+  ONBOARDAPI_TEST_DOMAIN: "42"
+
+jobs:
+  # The generated Rust/C++ must match datamodel/*.rmodel and the generator. No SDK needed.
+  codegen:
+    name: Generated code is up to date
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo run -q -p onboardapi-codegen -- --datamodel datamodel --workspace .
+      - run: cargo fmt --all
+      - name: Fail on drift
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --short
+            git --no-pager diff --stat
+            echo "::error::Generated code is stale. Run 'just codegen' and commit the result."
+            exit 1
+          fi
+
+  # docs.rs has no SDK; the build script skips the native part when DOCS_RS is set.
+  docs:
+    name: Docs (docs.rs mode)
+    runs-on: ubuntu-24.04
+    env:
+      DOCS_RS: "1"
+      RUSTDOCFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo doc -p onboardapi -p onboardapi-sys --no-deps
+
+  deny:
+    name: Licenses & advisories
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check advisories bans licenses sources
+
+  # Type-checks with the oldest supported Rust. `cargo check` never links, so no SDK.
+  msrv:
+    name: MSRV
+    runs-on: ubuntu-24.04
+    env:
+      DOCS_RS: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - id: msrv
+        run: echo "version=$(sed -n 's/^rust-version = "\(.*\)"/\1/p' Cargo.toml)" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.msrv.outputs.version }}
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo check -p onboardapi -p onboardapi-sys --all-targets --locked
+
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    # The armv8 SDK build has not been exercised yet; it reports without blocking.
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-22.04, experimental: false, lint: false }
+          - { os: ubuntu-24.04, experimental: false, lint: true }
+          - { os: ubuntu-24.04-arm, experimental: true, lint: false }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - uses: ./.github/actions/setup-sdk
+      - if: matrix.lint
+        run: cargo fmt --all --check
+      - if: matrix.lint
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo build --workspace --all-targets --locked
+      # Every operation of every module through the real C++ library and DDS.
+      - run: cargo test --workspace --locked
+      - name: Examples start and talk across processes
+        env:
+          NO_COLOR: "1"
+        run: |
+          export ONBOARDAPI_DOMAIN=7
+          timeout 8 target/debug/examples/inspector_demo > demo.log 2>&1 &
+          sleep 2
+          GNSS_SERVICE_NAME=demo_vehicle timeout 4 target/debug/examples/gnss_sim client > client.log 2>&1 || true
+          wait || true
+          cat client.log
+          grep -q 'position key_id="hull"' client.log || { echo "::error::cross-process traffic missing"; cat demo.log; exit 1; }
+          grep -q 'service received op="NotifyPosition"' demo.log || { echo "::error::service saw no commands"; cat demo.log; exit 1; }
+
+  # What `cargo publish` would upload, built from the packaged sources against the SDK.
+  package:
+    name: Package
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: ./.github/actions/setup-sdk
+      - run: cargo package --workspace --exclude onboardapi-codegen --locked
+      - run: ls -la target/package/*.crate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crates
+          path: target/package/*.crate
+          if-no-files-found: error

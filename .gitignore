@@ -1,0 +1,5 @@
+/target
+/.sdk
+.env
+ddkit.log
+console_output.txt

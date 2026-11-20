@@ -1,0 +1,34 @@
+# cargo-deny: licenses, security advisories, duplicate crates, crate sources.
+# https://embarkstudios.github.io/cargo-deny/
+
+[graph]
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+all-features = true
+
+[advisories]
+yanked = "deny"
+ignore = [
+    # dotenv is unmaintained (dotenvy is the maintained fork). Only the examples use it
+    # (dev-dependency), it never ships in the library. Swap to dotenvy to drop this.
+    { id = "RUSTSEC-2021-0141", reason = "dev-dependency of the examples only" },
+]
+
+[licenses]
+confidence-threshold = 0.9
+# Only what the dependency tree uses today; extend deliberately.
+allow = [
+    "Apache-2.0",
+    "EPL-2.0",
+    "MIT",
+    "Unicode-3.0",
+]
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Path dependencies inside the workspace carry a version too, so they are not wildcards.
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

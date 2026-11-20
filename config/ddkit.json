@@ -1,0 +1,10 @@
+{
+  "ddkit": {
+    "log": {
+      "sinks": [
+        { "type": "cerr", "level": "warn" },
+        { "type": "file", "file": "ddkit.log", "level": "info" }
+      ]
+    }
+  }
+}

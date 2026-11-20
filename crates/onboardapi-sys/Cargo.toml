@@ -1,0 +1,20 @@
+[package]
+name = "onboardapi-sys"
+description = "Raw FFI to the Rheinmetall onboardapi C++ SDK through a generated extern \"C\" shim"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+keywords.workspace = true
+categories = ["external-ffi-bindings"]
+readme = "README.md"
+links = "onboardapi"
+build = "build.rs"
+include = ["/src", "/shim", "/build.rs", "/README.md"]
+
+[build-dependencies]
+cc.workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]

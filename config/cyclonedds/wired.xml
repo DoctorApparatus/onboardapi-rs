@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Cyclone DDS config for onboardapi. Use with: export CYCLONEDDS_URI=file://$PWD/<this file> -->
+<!-- Rust apps and the onboardapi-inspector must use the same file (or compatible ones on each host). -->
+<CycloneDDS xmlns="https://cdds.io/config"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd">
+  <Domain Id="any">
+    <!-- Wired LAN. Replace the address with this host's Ethernet IP (ip -4 addr). -->
+    <General>
+      <Interfaces>
+        <NetworkInterface address="192.168.1.42"/>
+        <!-- or select by name: <NetworkInterface name="eth0"/> -->
+      </Interfaces>
+    </General>
+    <Discovery>
+      <!-- predictable ports -->
+      <ParticipantIndex>auto</ParticipantIndex>
+    </Discovery>
+  </Domain>
+</CycloneDDS>

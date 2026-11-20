@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Cyclone DDS config for onboardapi. Use with: export CYCLONEDDS_URI=file://$PWD/<this file> -->
+<!-- Rust apps and the onboardapi-inspector must use the same file (or compatible ones on each host). -->
+<CycloneDDS xmlns="https://cdds.io/config"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd">
+  <Domain Id="any">
+    <!-- Local development: inspector + simulations on one machine, nothing leaves the host. -->
+    <General>
+      <Interfaces>
+        <NetworkInterface address="127.0.0.1" prefer_multicast="false"/>
+      </Interfaces>
+      <!-- Loopback has no multicast; discovery goes unicast to the local peer ports below. -->
+      <AllowMulticast>false</AllowMulticast>
+    </General>
+    <Discovery>
+      <!-- predictable ports -->
+      <ParticipantIndex>auto</ParticipantIndex>
+      <!-- Every process (and the inspector) takes one index per domain; leave headroom. -->
+      <MaxAutoParticipantIndex>30</MaxAutoParticipantIndex>
+      <Peers>
+        <Peer address="127.0.0.1"/>
+      </Peers>
+    </Discovery>
+  </Domain>
+</CycloneDDS>

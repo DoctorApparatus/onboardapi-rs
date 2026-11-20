@@ -1,0 +1,51 @@
+name: Set up onboardapi SDK
+description: >
+  Restores (or downloads and caches) the onboardapi C++ SDK for this runner's
+  architecture and exports ONBOARDAPI_SDK_DIR, CYCLONEDDS_URI and DDKIT_CFG.
+
+inputs:
+  build-type:
+    description: SDK build flavour (Release, RelWithDebInfo, Debug)
+    default: Release
+
+outputs:
+  sdk-dir:
+    description: Directory containing include/ and lib/
+    value: ${{ steps.vars.outputs.dir }}
+
+runs:
+  using: composite
+  steps:
+    - id: vars
+      shell: bash
+      run: |
+        version="$(sed -n 's/^const SDK_VERSION: &str = "\(.*\)";/\1/p' crates/onboardapi-sys/build.rs)"
+        case "$(uname -m)" in
+          x86_64) arch=x86_64 ;;
+          aarch64) arch=armv8 ;;
+          armv7*) arch=armv7 ;;
+          *) echo "::error::unsupported runner arch $(uname -m)"; exit 1 ;;
+        esac
+        test -n "$version" || { echo "::error::SDK_VERSION not found in build.rs"; exit 1; }
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+        echo "arch=$arch" >> "$GITHUB_OUTPUT"
+        echo "dir=$GITHUB_WORKSPACE/.sdk/$version/$arch-linux" >> "$GITHUB_OUTPUT"
+
+    - id: cache
+      uses: actions/cache@v4
+      with:
+        path: .sdk/${{ steps.vars.outputs.version }}/${{ steps.vars.outputs.arch }}-linux
+        key: onboardapi-sdk-${{ steps.vars.outputs.version }}-${{ steps.vars.outputs.arch }}-${{ inputs.build-type }}-${{ hashFiles('scripts/fetch-sdk.sh') }}
+
+    - if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: scripts/fetch-sdk.sh "${{ steps.vars.outputs.version }}" "${{ steps.vars.outputs.arch }}" "${{ inputs.build-type }}"
+
+    - shell: bash
+      run: |
+        {
+          echo "ONBOARDAPI_SDK_DIR=${{ steps.vars.outputs.dir }}"
+          echo "LD_LIBRARY_PATH=${{ steps.vars.outputs.dir }}/lib"
+          echo "CYCLONEDDS_URI=file://$GITHUB_WORKSPACE/config/cyclonedds/localhost.xml"
+          echo "DDKIT_CFG=$GITHUB_WORKSPACE/config/ddkit.json"
+        } >> "$GITHUB_ENV"

@@ -1,0 +1,125 @@
+name: Release
+
+# Publishes onboardapi-sys + onboardapi to crates.io and creates a GitHub release.
+#
+#   just release 9.10.1      # bumps the version, commits, tags rs-v9.10.1
+#   git push --follow-tags   # triggers this workflow
+#
+# Tags are prefixed `rs-v` so they never clash with upstream SDK tags (`v9.10.0`).
+# Manual runs (workflow_dispatch) do everything except uploading: a full dry run.
+
+on:
+  push:
+    tags: ["rs-v*"]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Package and verify only, publish nothing
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  verify:
+    name: Verify version & metadata
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      dry-run: ${{ steps.meta.outputs.dry-run }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: meta
+        env:
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          DRY_INPUT: ${{ inputs.dry-run }}
+        run: |
+          version="$(cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[] | select(.name == "onboardapi") | .version')"
+          repo="$(cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[] | select(.name == "onboardapi") | .repository')"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            tag="${GITHUB_REF_NAME#rs-v}"
+            if [ "$tag" != "$version" ]; then
+              echo "::error::tag $GITHUB_REF_NAME does not match workspace version $version"
+              exit 1
+            fi
+            echo "dry-run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "dry-run=${DRY_INPUT:-true}" >> "$GITHUB_OUTPUT"
+          fi
+
+          # crates.io shows this URL; it must point at the repository that publishes.
+          if [ "${repo%/}" != "$REPO_URL" ]; then
+            echo "::error::workspace.package.repository is '$repo' but this repository is $REPO_URL — update Cargo.toml"
+            exit 1
+          fi
+
+  publish:
+    name: Publish to crates.io
+    needs: [ci, verify]
+    runs-on: ubuntu-24.04
+    # Add required reviewers to this environment to gate every release by hand.
+    environment: crates-io
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: ./.github/actions/setup-sdk
+      - name: Dry run
+        if: needs.verify.outputs.dry-run == 'true'
+        run: cargo publish --workspace --exclude onboardapi-codegen --dry-run --locked
+      # Dependency order: the -sys crate first. cargo waits until each upload is in the index.
+      - name: Publish
+        if: needs.verify.outputs.dry-run != 'true'
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          test -n "$CARGO_REGISTRY_TOKEN" || { echo "::error::secret CARGO_REGISTRY_TOKEN is not set"; exit 1; }
+          cargo publish -p onboardapi-sys --locked
+          cargo publish -p onboardapi --locked
+      - run: cargo package --workspace --exclude onboardapi-codegen --locked --no-verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-crates
+          path: target/package/*.crate
+          if-no-files-found: error
+
+  github-release:
+    name: GitHub release
+    needs: [verify, publish]
+    if: needs.verify.outputs.dry-run != 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-crates
+          path: crates
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: onboardapi-rs ${{ needs.verify.outputs.version }}
+          generate_release_notes: true
+          files: crates/*.crate
+          body: |
+            Rust bindings for onboardapi, generated from the 9.10.0 data model.
+
+            ```toml
+            onboardapi = "${{ needs.verify.outputs.version }}"
+            ```
+
+            Requires the onboardapi C++ SDK (not bundled), see the crate README.

@@ -1,0 +1,15 @@
+[package]
+name = "onboardapi-codegen"
+description = "Generates the Rust types and the C++ shim of the onboardapi wrapper from the .rmodel files"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+heck.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
